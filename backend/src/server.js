@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const authRoutes = require("./routes/authRoutes");
 
 const pool = require("./config/db");
 
@@ -11,6 +12,9 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Authentication routes
+app.use("/api/auth", authRoutes);
 
 // Health check route
 app.get("/", (req, res) => {
