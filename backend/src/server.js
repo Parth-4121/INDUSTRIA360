@@ -7,6 +7,9 @@ const projectRoutes = require("./routes/projectRoutes");
 const rulesRoutes = require("./routes/rulesRoutes");
 const checklistRoutes = require("./routes/checklistRoutes");
 const documentRoutes = require("./routes/documentRoutes");
+const documentPrecheckRoutes = require("./routes/documentPrecheckRoutes");
+const applicationRoutes = require("./routes/applicationRoutes");
+const officerApplicationRoutes = require("./routes/officerApplicationRoutes");
 
 const pool = require("./config/db");
 
@@ -28,6 +31,16 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/rules", rulesRoutes);
 app.use("/api/checklist", checklistRoutes);
 app.use("/api/documents", documentRoutes);
+app.use(
+  "/api/document-prechecks",
+  documentPrecheckRoutes
+);
+app.use(
+  "/api/applications",
+  applicationRoutes
+);
+app.use("/api/officer/applications", officerApplicationRoutes);
+
 
 // Health check route
 app.get("/", (req, res) => {
