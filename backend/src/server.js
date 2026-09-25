@@ -1,8 +1,12 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 const authRoutes = require("./routes/authRoutes");
 const projectRoutes = require("./routes/projectRoutes");
+const rulesRoutes = require("./routes/rulesRoutes");
+const checklistRoutes = require("./routes/checklistRoutes");
+const documentRoutes = require("./routes/documentRoutes");
 
 const pool = require("./config/db");
 
@@ -13,10 +17,17 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "../uploads"))
+);
 
 // Authentication routes
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/rules", rulesRoutes);
+app.use("/api/checklist", checklistRoutes);
+app.use("/api/documents", documentRoutes);
 
 // Health check route
 app.get("/", (req, res) => {
