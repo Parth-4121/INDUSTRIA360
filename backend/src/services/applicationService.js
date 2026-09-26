@@ -229,6 +229,16 @@ const submitApplication = async (
     [applicationId]
   );
 
+  await pool.query(
+  `
+  UPDATE project_approvals
+  SET
+    status = 'SUBMITTED'
+  WHERE id = $1
+  `,
+  [application.project_approval_id]
+);
+
   return {
     application: result.rows[0],
   };

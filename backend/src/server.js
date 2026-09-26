@@ -10,6 +10,7 @@ const documentRoutes = require("./routes/documentRoutes");
 const documentPrecheckRoutes = require("./routes/documentPrecheckRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
 const officerApplicationRoutes = require("./routes/officerApplicationRoutes");
+const parallelWorkflowRoutes = require("./routes/parallelWorkflowRoutes");
 
 const pool = require("./config/db");
 
@@ -40,6 +41,7 @@ app.use(
   applicationRoutes
 );
 app.use("/api/officer/applications", officerApplicationRoutes);
+app.use("/api/parallel-workflow", parallelWorkflowRoutes);
 
 
 // Health check route
