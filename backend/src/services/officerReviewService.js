@@ -81,6 +81,39 @@ const reviewApplication = async (
     };
   }
 
+  if (decision === "APPROVED") {
+  const inspectionResult = await pool.query(
+    `
+    SELECT
+      i.id AS inspection_id,
+      i.status AS inspection_status,
+      ir.result AS inspection_result
+    FROM inspections i
+
+    LEFT JOIN inspection_reports ir
+      ON ir.inspection_id = i.id
+
+    WHERE i.application_id = $1
+    ORDER BY i.created_at DESC
+    LIMIT 1
+    `,
+    [applicationId]
+  );
+
+  if (inspectionResult.rows.length > 0) {
+    const inspection = inspectionResult.rows[0];
+
+    if (
+      inspection.inspection_status !== "COMPLETED" ||
+      inspection.inspection_result !== "PASSED"
+    ) {
+      return {
+        error: "INSPECTION_NOT_PASSED",
+      };
+    }
+  }
+}
+
   let updateQuery;
   let values;
 

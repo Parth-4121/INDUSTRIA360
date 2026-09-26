@@ -63,6 +63,14 @@ const reviewApplicationController = async (req, res) => {
       });
     }
 
+    if (result.error === "INSPECTION_NOT_PASSED") {
+  return res.status(400).json({
+    success: false,
+    message:
+      "Application cannot be approved until the required inspection is completed and passed",
+  });
+}
+
     return res.status(200).json({
       success: true,
       message:
