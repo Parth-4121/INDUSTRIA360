@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { createNotification } = require("./notificationService");
 
 const createInspection = async ({
   applicationId,
@@ -40,6 +41,7 @@ const createInspection = async ({
       a.application_number,
       a.status AS application_status,
       a.assigned_officer_id,
+      a.submitted_by,
       at.department_id
     FROM applications a
     JOIN project_approvals pa
@@ -125,6 +127,19 @@ const createInspection = async ({
       remarks || null,
     ]
   );
+
+  await createNotification({
+    userId: application.submitted_by,
+    type: "INSPECTION_SCHEDULED",
+    title: "Inspection Scheduled",
+    message: `An inspection has been scheduled for your application ${applicationId}.`,
+    relatedEntityType: "APPLICATION",
+    relatedEntityId: applicationId,
+    channels: {
+      inApp: true,
+      email: false,
+    },
+  });
 
   return {
     inspection: result.rows[0],
@@ -293,6 +308,30 @@ const completeInspection = async (
     [inspectionId, remarks || null]
   );
 
+  const applicationResult = await pool.query(
+    `
+    SELECT submitted_by
+    FROM applications
+    WHERE id = $1
+    `,
+    [inspection.application_id]
+  );
+
+  if (applicationResult.rows.length > 0) {
+    await createNotification({
+      userId: applicationResult.rows[0].submitted_by,
+      type: "INSPECTION_COMPLETED",
+      title: "Inspection Completed",
+      message: `The inspection for your application ${inspection.application_id} has been completed.`,
+      relatedEntityType: "APPLICATION",
+      relatedEntityId: inspection.application_id,
+      channels: {
+        inApp: true,
+        email: false,
+      },
+    });
+  }
+
   return {
     inspection: updateResult.rows[0],
   };
@@ -407,6 +446,33 @@ const createInspectionReport = async ({
     ]
   );
 
+  // Send important notification when inspection fails
+  if (result === "FAILED") {
+    const applicationResult = await pool.query(
+      `
+      SELECT submitted_by
+      FROM applications
+      WHERE id = $1
+      `,
+      [inspection.application_id]
+    );
+
+    if (applicationResult.rows.length > 0) {
+      await createNotification({
+        userId: applicationResult.rows[0].submitted_by,
+        type: "INSPECTION_FAILED",
+        title: "Inspection Failed",
+        message: `The inspection for your application ${inspection.application_id} has failed. Please review the inspection findings and required actions.`,
+        relatedEntityType: "APPLICATION",
+        relatedEntityId: inspection.application_id,
+        channels: {
+          inApp: true,
+          email: true,
+        },
+      });
+    }
+  }
+
   return {
     report: reportResult.rows[0],
   };
@@ -467,6 +533,6 @@ module.exports = {
   getInspectionByApplication,
   startInspection,
   completeInspection,
-   createInspectionReport,
+  createInspectionReport,
   getInspectionReport,
 };

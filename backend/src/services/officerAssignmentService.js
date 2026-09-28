@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { createNotification } = require("./notificationService");
 
 const assignApplicationToOfficer = async (
   applicationId,
@@ -33,6 +34,8 @@ const assignApplicationToOfficer = async (
       a.id,
       a.status,
       a.assigned_officer_id,
+      a.submitted_by,
+      a.application_number,
       at.department_id
     FROM applications a
 
@@ -67,7 +70,7 @@ const assignApplicationToOfficer = async (
     };
   }
 
-  if (applicationResult.rows[0].assigned_officer_id) {
+  if (application.assigned_officer_id) {
     return {
       error: "ALREADY_ASSIGNED",
     };
@@ -91,6 +94,23 @@ const assignApplicationToOfficer = async (
     `,
     [officerUserId, applicationId]
   );
+
+  // ============================================
+  // CREATE IN-APP NOTIFICATION FOR ENTREPRENEUR
+  // ============================================
+
+  await createNotification({
+    userId: application.submitted_by,
+    type: "APPLICATION_ASSIGNED",
+    title: "Application Assigned",
+    message: `Your application ${application.application_number} has been assigned to an officer for processing.`,
+    relatedEntityType: "APPLICATION",
+    relatedEntityId: applicationId,
+    channels: {
+      inApp: true,
+      email: false,
+    },
+  });
 
   return {
     application: updateResult.rows[0],

@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { createNotification } = require("./notificationService");
 
 const reviewApplication = async (
   applicationId,
@@ -35,6 +36,7 @@ const reviewApplication = async (
       a.id,
       a.status,
       a.assigned_officer_id,
+      a.submitted_by,
       at.department_id
     FROM applications a
 
@@ -82,37 +84,37 @@ const reviewApplication = async (
   }
 
   if (decision === "APPROVED") {
-  const inspectionResult = await pool.query(
-    `
-    SELECT
-      i.id AS inspection_id,
-      i.status AS inspection_status,
-      ir.result AS inspection_result
-    FROM inspections i
+    const inspectionResult = await pool.query(
+      `
+      SELECT
+        i.id AS inspection_id,
+        i.status AS inspection_status,
+        ir.result AS inspection_result
+      FROM inspections i
 
-    LEFT JOIN inspection_reports ir
-      ON ir.inspection_id = i.id
+      LEFT JOIN inspection_reports ir
+        ON ir.inspection_id = i.id
 
-    WHERE i.application_id = $1
-    ORDER BY i.created_at DESC
-    LIMIT 1
-    `,
-    [applicationId]
-  );
+      WHERE i.application_id = $1
+      ORDER BY i.created_at DESC
+      LIMIT 1
+      `,
+      [applicationId]
+    );
 
-  if (inspectionResult.rows.length > 0) {
-    const inspection = inspectionResult.rows[0];
+    if (inspectionResult.rows.length > 0) {
+      const inspection = inspectionResult.rows[0];
 
-    if (
-      inspection.inspection_status !== "COMPLETED" ||
-      inspection.inspection_result !== "PASSED"
-    ) {
-      return {
-        error: "INSPECTION_NOT_PASSED",
-      };
+      if (
+        inspection.inspection_status !== "COMPLETED" ||
+        inspection.inspection_result !== "PASSED"
+      ) {
+        return {
+          error: "INSPECTION_NOT_PASSED",
+        };
+      }
     }
   }
-}
 
   let updateQuery;
   let values;
@@ -168,18 +170,56 @@ const reviewApplication = async (
   );
 
   await pool.query(
-  `
-  UPDATE project_approvals
-  SET
-    status = $1
-  WHERE id = (
-    SELECT project_approval_id
-    FROM applications
-    WHERE id = $2
-  )
-  `,
-  [decision, applicationId]
-);
+    `
+    UPDATE project_approvals
+    SET
+      status = $1
+    WHERE id = (
+      SELECT project_approval_id
+      FROM applications
+      WHERE id = $2
+    )
+    `,
+    [decision, applicationId]
+  );
+
+  // ============================================
+  // APPLICATION APPROVED NOTIFICATION
+  // ============================================
+
+  if (decision === "APPROVED") {
+    await createNotification({
+      userId: application.submitted_by,
+      type: "APPLICATION_APPROVED",
+      title: "Application Approved",
+      message: `Your application ${updateResult.rows[0].application_number} has been approved successfully.`,
+      relatedEntityType: "APPLICATION",
+      relatedEntityId: applicationId,
+      channels: {
+        inApp: true,
+        email: true,
+      },
+    });
+  }
+
+  // ============================================
+  // APPLICATION REJECTED NOTIFICATION
+  // ============================================
+
+  if (decision === "REJECTED") {
+    await createNotification({
+      userId: application.submitted_by,
+      type: "APPLICATION_REJECTED",
+      title: "Application Rejected",
+      message: `Your application ${updateResult.rows[0].application_number} has been rejected. Reason: ${rejectionReason}`,
+      relatedEntityType: "APPLICATION",
+      relatedEntityId: applicationId,
+      channels: {
+        inApp: true,
+        email: true,
+      },
+    });
+  }
 
   return {
     application: updateResult.rows[0],

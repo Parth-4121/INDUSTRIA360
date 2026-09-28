@@ -1,4 +1,6 @@
 const pool = require("../config/db");
+const { createNotification } = require("./notificationService");
+const { createApplicationSLA } = require("./slaService");
 
 const createApplication = async (
   projectApprovalId,
@@ -238,6 +240,21 @@ const submitApplication = async (
   `,
   [application.project_approval_id]
 );
+
+await createApplicationSLA(applicationId);
+
+await createNotification({
+  userId,
+  type: "APPLICATION_SUBMITTED",
+  title: "Application Submitted",
+  message: `Your application ${result.rows[0].application_number} has been successfully submitted.`,
+  relatedEntityType: "APPLICATION",
+  relatedEntityId: result.rows[0].id,
+  channels: {
+    inApp: true,
+    email: false,
+  },
+});
 
   return {
     application: result.rows[0],

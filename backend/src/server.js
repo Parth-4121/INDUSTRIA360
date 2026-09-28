@@ -9,10 +9,20 @@ const checklistRoutes = require("./routes/checklistRoutes");
 const documentRoutes = require("./routes/documentRoutes");
 const documentPrecheckRoutes = require("./routes/documentPrecheckRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
+const applicationQueryRoutes = require("./routes/applicationQueryRoutes");
 const officerApplicationRoutes = require("./routes/officerApplicationRoutes");
 const parallelWorkflowRoutes = require("./routes/parallelWorkflowRoutes");
 const riskRoutes = require("./routes/riskRoutes");
 const inspectionRoutes = require("./routes/inspectionRoutes");
+const slaRoutes = require("./routes/slaRoutes");
+const { checkApproachingSLAs,
+        checkBreachedSLAs,
+ } = require("./services/slaService");
+ const { checkRenewalReminders,
+         checkRenewalDue,
+  } = require("./services/renewalService");
+ const renewalRoutes = require("./routes/renewalRoutes");
+
 
 const pool = require("./config/db");
 
@@ -42,10 +52,13 @@ app.use(
   "/api/applications",
   applicationRoutes
 );
+app.use("/api/queries", applicationQueryRoutes);
 app.use("/api/officer/applications", officerApplicationRoutes);
 app.use("/api/parallel-workflow", parallelWorkflowRoutes);
 app.use("/api/risk", riskRoutes);
 app.use("/api/inspections", inspectionRoutes);
+app.use("/api/sla", slaRoutes);
+app.use("/api/renewals", renewalRoutes);
 
 
 // Health check route
@@ -75,5 +88,17 @@ app.get("/api/health/db", async (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
+  const runSLACheck = async () => {
+  console.log("Checking SLAs and renewals...");
+
+  await checkApproachingSLAs();
+  await checkBreachedSLAs();
+  await checkRenewalReminders();
+  await checkRenewalDue();
+};
+
+runSLACheck();
+
+setInterval(runSLACheck, 60 * 60 * 1000);
   console.log(`INDUSTRIA360 Backend running on port ${PORT}`);
 });
