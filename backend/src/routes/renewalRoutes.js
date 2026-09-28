@@ -1,6 +1,7 @@
 const express = require("express");
 const {
   getRenewalByApplicationController,
+  createRenewalApplicationController,
 } = require("../controllers/renewalController");
 const { authenticateToken } = require("../middleware/authMiddleware");
 const {
@@ -17,6 +18,12 @@ router.get(
   "/:applicationId",
   authenticateToken,
   getRenewalByApplicationController
+);
+
+router.post(
+  "/:applicationId/create",
+  authenticateToken,
+  createRenewalApplicationController
 );
 
 router.post(

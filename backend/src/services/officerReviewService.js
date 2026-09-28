@@ -169,6 +169,52 @@ const reviewApplication = async (
     values
   );
 
+  const renewalResult = await pool.query(
+  `
+  SELECT
+    id,
+    application_id
+  FROM renewals
+  WHERE renewal_application_id = $1
+  `,
+  [applicationId]
+);
+
+if (
+  renewalResult.rows.length > 0 &&
+  decision === "APPROVED"
+) {
+  await pool.query(
+    `
+    UPDATE renewals
+    SET
+      status = 'RENEWED',
+      current_valid_from = current_valid_until + INTERVAL '1 day',
+      current_valid_until = current_valid_until + INTERVAL '1 year',
+      renewal_due_date = current_valid_until + INTERVAL '1 year' - INTERVAL '5 days',
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = $1
+    `,
+    [renewalResult.rows[0].id]
+  );
+}
+
+if (
+  renewalResult.rows.length > 0 &&
+  decision === "REJECTED"
+) {
+  await pool.query(
+    `
+    UPDATE renewals
+    SET
+      status = 'RENEWAL_REJECTED',
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = $1
+    `,
+    [renewalResult.rows[0].id]
+  );
+}
+
   await pool.query(
     `
     UPDATE project_approvals
