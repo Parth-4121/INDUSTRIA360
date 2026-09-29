@@ -121,7 +121,7 @@ const Analytics = () => {
     return (
       <div className="analytics-message">
         <h3>
-          Loading INDUSTRIA360 Analytics...
+          Loading UdyogSetu AI Analytics...
         </h3>
 
         <p>
@@ -180,7 +180,7 @@ const Analytics = () => {
 
             <div>
 
-              <h1>INDUSTRIA360</h1>
+              <h1>UdyogSetu AI</h1>
 
               <p>
                 Intelligent Industrial Approval &

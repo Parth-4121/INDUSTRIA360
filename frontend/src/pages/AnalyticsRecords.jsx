@@ -220,7 +220,7 @@ const AnalyticsRecords = () => {
       <div className="analytics-message">
         <h3>Loading records...</h3>
         <p>
-          Please wait while INDUSTRIA360 loads
+          Please wait while UdyogSetu AI loads
           the selected records.
         </p>
       </div>
@@ -257,7 +257,7 @@ const AnalyticsRecords = () => {
             </div>
 
             <div>
-              <h1>INDUSTRIA360</h1>
+              <h1>UdyogSetu AI</h1>
 
               <p>
                 Analytics & Operational Records

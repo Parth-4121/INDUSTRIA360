@@ -11,7 +11,7 @@ function App() {
           path="/"
           element={
             <div>
-              <h1>INDUSTRIA360</h1>
+              <h1>UdyogSetu AI</h1>
               <p>
                 Intelligent Industrial Approval & Compliance
                 Management Platform
