@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SchemeMatching from "./pages/SchemeMatching";
+import Analytics from "./pages/Analytics";
+import AnalyticsRecords from "./pages/AnalyticsRecords";
 
 function App() {
   return (
@@ -17,6 +19,16 @@ function App() {
             </div>
           }
         />
+
+        <Route
+          path="/analytics"
+          element={<Analytics />}
+        />
+
+        <Route
+  path="/analytics/records"
+  element={<AnalyticsRecords />}
+/>
 
         <Route
           path="/projects/:projectId/schemes"
