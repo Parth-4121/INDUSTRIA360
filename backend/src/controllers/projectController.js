@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { createAuditLog } = require("../services/auditLogService");
 
 const createProject = async (req, res) => {
   try {
@@ -145,6 +146,22 @@ const createProject = async (req, res) => {
         electricityRequirement || false,
       ]
     );
+
+        await createAuditLog({
+      userId: ownerUserId,
+      action: "CREATE_PROJECT",
+      entityType: "PROJECT",
+      entityId: result.rows[0].id,
+      oldValue: null,
+      newValue: {
+        projectName: result.rows[0].project_name,
+        sectorId: result.rows[0].sector_id,
+        stateId: result.rows[0].state_id,
+        districtId: result.rows[0].district_id,
+        businessType: result.rows[0].business_type,
+        status: result.rows[0].status,
+      },
+    });
 
     res.status(201).json({
       success: true,

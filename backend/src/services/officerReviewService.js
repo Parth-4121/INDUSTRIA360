@@ -1,5 +1,6 @@
 const pool = require("../config/db");
 const { createNotification } = require("./notificationService");
+const { createAuditLog } = require("./auditLogService");
 
 const reviewApplication = async (
   applicationId,
@@ -228,6 +229,22 @@ if (
     `,
     [decision, applicationId]
   );
+
+  await createAuditLog({
+  userId: officerUserId,
+  action:
+    decision === "APPROVED"
+      ? "APPROVE_APPLICATION"
+      : "REJECT_APPLICATION",
+  entityType: "APPLICATION",
+  entityId: applicationId,
+  oldValue: {
+    status: application.status,
+  },
+  newValue: {
+    status: decision,
+  },
+});
 
   // ============================================
   // APPLICATION APPROVED NOTIFICATION

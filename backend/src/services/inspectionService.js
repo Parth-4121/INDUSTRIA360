@@ -1,5 +1,6 @@
 const pool = require("../config/db");
 const { createNotification } = require("./notificationService");
+const { createAuditLog } = require("./auditLogService");
 
 const createInspection = async ({
   applicationId,
@@ -127,6 +128,20 @@ const createInspection = async ({
       remarks || null,
     ]
   );
+
+    await createAuditLog({
+    userId: officerId,
+    action: "CREATE_INSPECTION",
+    entityType: "INSPECTION",
+    entityId: result.rows[0].id,
+    oldValue: null,
+    newValue: {
+      applicationId: result.rows[0].application_id,
+      status: result.rows[0].status,
+      scheduledDate: result.rows[0].scheduled_date,
+      location: result.rows[0].location,
+    },
+  });
 
   await createNotification({
     userId: application.submitted_by,

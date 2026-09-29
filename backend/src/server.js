@@ -25,6 +25,7 @@ const { checkApproachingSLAs,
  const grievanceRoutes = require("./routes/grievanceRoutes");
  const schemeRoutes = require("./routes/schemeRoutes");
  const analyticsRoutes = require("./routes/analyticsRoutes");
+ const adminRoutes = require("./routes/adminRoutes");
 
 
 const pool = require("./config/db");
@@ -65,6 +66,7 @@ app.use("/api/renewals", renewalRoutes);
 app.use("/api/grievances", grievanceRoutes);
 app.use("/api/schemes", schemeRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/admin", adminRoutes);
 
 
 // Health check route

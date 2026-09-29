@@ -1,6 +1,7 @@
 const path = require("path");
 
 const pool = require("../config/db");
+const { createAuditLog } = require("../services/auditLogService");
 
 const {
   getProjectDocuments,
@@ -228,6 +229,21 @@ true
         newVersion,
       ]
     );
+
+        await createAuditLog({
+      userId: ownerUserId,
+      action: "UPLOAD_DOCUMENT",
+      entityType: "PROJECT_DOCUMENT",
+      entityId: documentResult.rows[0].id,
+      oldValue: null,
+      newValue: {
+        projectId: documentResult.rows[0].project_id,
+        documentType: documentResult.rows[0].document_type,
+        documentName: documentResult.rows[0].document_name,
+        version: documentResult.rows[0].version,
+        verificationStatus: documentResult.rows[0].verification_status,
+      },
+    });
 
     res.status(201).json({
       success: true,

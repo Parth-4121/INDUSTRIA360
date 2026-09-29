@@ -1,6 +1,7 @@
 const pool = require("../config/db");
 const { createNotification } = require("./notificationService");
 const { createApplicationSLA } = require("./slaService");
+const { createAuditLog } = require("./auditLogService");
 
 const createApplication = async (
   projectApprovalId,
@@ -240,6 +241,19 @@ const submitApplication = async (
   `,
   [application.project_approval_id]
 );
+
+await createAuditLog({
+  userId,
+  action: "SUBMIT_APPLICATION",
+  entityType: "APPLICATION",
+  entityId: result.rows[0].id,
+  oldValue: {
+    status: "DRAFT",
+  },
+  newValue: {
+    status: "SUBMITTED",
+  },
+});
 
 await createApplicationSLA(applicationId);
 
