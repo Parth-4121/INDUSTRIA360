@@ -1,8 +1,8 @@
-# INDUSTRIA360
+# UdyogSetu AI
 
 ## Intelligent Industrial Approval & Compliance Management Platform
 
-INDUSTRIA360 is a PERN-based industrial approval and compliance management platform designed to simplify the lifecycle of industrial projects.
+UdyogSetu AI is a PERN-based industrial approval and compliance management platform designed to simplify the lifecycle of industrial projects.
 
 The platform connects project creation, potentially applicable approval identification, personalized checklists, document management, pre-submission validation, application tracking, departmental workflows, risk-based scrutiny, inspections, SLA monitoring, notifications, renewals, grievances, government schemes and analytics.
 
@@ -38,7 +38,7 @@ The platform connects project creation, potentially applicable approval identifi
 ## Project Structure
 
 ```text
-INDUSTRIA360/
+UdyogSetu AI/
 ├── frontend/
 ├── backend/
 ├── database/
