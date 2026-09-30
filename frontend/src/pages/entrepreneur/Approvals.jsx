@@ -23,7 +23,7 @@ const Approvals = () => {
       setError("");
 
       const response = await axios.get(
-        "http://localhost:5000/api/projects",
+        `${import.meta.env.VITE_API_URL}/projects`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,7 +57,7 @@ const Approvals = () => {
       setApprovals([]);
 
       const response = await axios.post(
-        `http://localhost:5000/api/rules/evaluate/${selectedProjectId}`,
+        `${import.meta.env.VITE_API_URL}/rules/evaluate/${selectedProjectId}`,
         {},
         {
           headers: {

@@ -19,7 +19,7 @@ const Applications = () => {
       setError("");
 
       const response = await axios.get(
-        "http://localhost:5000/api/projects",
+        `${import.meta.env.VITE_API_URL}/projects`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -54,7 +54,7 @@ const Applications = () => {
       setError("");
 
       const response = await axios.get(
-        `http://localhost:5000/api/parallel-workflow/${projectId}`,
+        `${import.meta.env.VITE_API_URL}/parallel-workflow/${projectId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ const Applications = () => {
     setError("");
 
     await axios.post(
-      "http://localhost:5000/api/applications",
+      `${import.meta.env.VITE_API_URL}/applications`,
       {
         projectApprovalId,
       },
@@ -126,7 +126,7 @@ const handleSubmitApplication = async (
     setError("");
 
     await axios.post(
-      `http://localhost:5000/api/applications/${applicationId}/submit`,
+      `${import.meta.env.VITE_API_URL}/applications/${applicationId}/submit`,
       {},
       {
         headers: {

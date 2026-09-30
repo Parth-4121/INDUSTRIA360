@@ -25,7 +25,7 @@ const Checklist = () => {
       setError("");
 
       const response = await axios.get(
-        "http://localhost:5000/api/projects",
+        `${import.meta.env.VITE_API_URL}/projects`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -59,7 +59,7 @@ const Checklist = () => {
       setChecklist([]);
 
       const response = await axios.get(
-        `http://localhost:5000/api/checklist/${selectedProjectId}`,
+        `${import.meta.env.VITE_API_URL}/checklist/${selectedProjectId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -20,7 +20,7 @@ const Queries = () => {
       setError("");
 
       const response = await axios.get(
-        "http://localhost:5000/api/officer/applications",
+        `${import.meta.env.VITE_API_URL}/officer/applications`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -73,7 +73,7 @@ const Queries = () => {
       setMessage("");
 
       const response = await axios.post(
-        `http://localhost:5000/api/queries/${selectedApplicationId}`,
+        `${import.meta.env.VITE_API_URL}/queries/${selectedApplicationId}`,
         {
           queryText: queryText.trim(),
         },

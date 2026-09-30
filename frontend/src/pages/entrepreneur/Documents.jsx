@@ -33,7 +33,7 @@ const Documents = () => {
       setError("");
 
       const response = await axios.get(
-        "http://localhost:5000/api/projects",
+        `${import.meta.env.VITE_API_URL}/projects`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -61,7 +61,7 @@ const Documents = () => {
       setSuccess("");
 
       const response = await axios.get(
-        `http://localhost:5000/api/documents/${projectId}`,
+        `${import.meta.env.VITE_API_URL}/documents/${projectId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -109,7 +109,7 @@ for (const document of fetchedDocuments) {
     const fetchPrecheckResult = async (documentId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/document-prechecks/${documentId}`,
+        `${import.meta.env.VITE_API_URL}/document-prechecks/${documentId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -174,7 +174,7 @@ for (const document of fetchedDocuments) {
       formData.append("document", selectedFile);
 
       const response = await axios.post(
-        `http://localhost:5000/api/documents/${selectedProjectId}/upload`,
+        `${import.meta.env.VITE_API_URL}/documents/${selectedProjectId}/upload`,
         formData,
         {
           headers: {
@@ -219,7 +219,7 @@ for (const document of fetchedDocuments) {
     setSuccess("");
 
     const response = await axios.post(
-      `http://localhost:5000/api/document-prechecks/${documentId}`,
+      `${import.meta.env.VITE_API_URL}/document-prechecks/${documentId}`,
       {},
       {
         headers: {

@@ -17,7 +17,7 @@ const Applications = () => {
       setError("");
 
       const response = await axios.get(
-        "http://localhost:5000/api/officer/applications",
+        `${import.meta.env.VITE_API_URL}/officer/applications`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ const Applications = () => {
     setError("");
 
     await axios.post(
-      `http://localhost:5000/api/officer/applications/${applicationId}/assign`,
+      `${import.meta.env.VITE_API_URL}/officer/applications/${applicationId}/assign`,
       {},
       {
         headers: {
@@ -69,7 +69,7 @@ const handleApprove = async (applicationId) => {
     setError("");
 
     await axios.put(
-      `http://localhost:5000/api/officer/applications/${applicationId}/review`,
+      `${import.meta.env.VITE_API_URL}/officer/applications/${applicationId}/review`,
       {
         decision: "APPROVED",
       },
@@ -104,7 +104,7 @@ const handleReject = async (applicationId) => {
     setError("");
 
     await axios.put(
-      `http://localhost:5000/api/officer/applications/${applicationId}/review`,
+      `${import.meta.env.VITE_API_URL}/officer/applications/${applicationId}/review`,
       {
         decision: "REJECTED",
         rejectionReason: rejectionReason.trim(),
