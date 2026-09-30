@@ -666,24 +666,34 @@ function Projects() {
 
                     <td>
                       <div className="project-actions">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleEdit(project)
-                          }
-                        >
-                          Edit
-                        </button>
+  <button
+    type="button"
+    onClick={() =>
+      handleEdit(project)
+    }
+  >
+    Edit
+  </button>
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleDelete(project)
-                          }
-                        >
-                          Delete
-                        </button>
-                      </div>
+  <button
+    type="button"
+    onClick={() =>
+      handleDelete(project)
+    }
+  >
+    Delete
+  </button>
+
+  <button
+    type="button"
+    onClick={() => {
+      window.location.href =
+        `/projects/${project.id}/schemes`;
+    }}
+  >
+    Government Schemes
+  </button>
+</div>
                     </td>
                   </tr>
                 ))}

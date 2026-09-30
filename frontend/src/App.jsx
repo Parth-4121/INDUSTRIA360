@@ -20,6 +20,8 @@ import Documents from "./pages/entrepreneur/Documents";
 import Applications from "./pages/entrepreneur/Applications";
 import OfficerApplications from "./pages/officer/Applications";
 import RegulatoryManagement from "./pages/admin/RegulatoryManagement";
+import Renewals from "./pages/entrepreneur/Renewals";
+import Grievances from "./pages/entrepreneur/Grievances";
 
 function DemoLogin() {
   const {
@@ -294,13 +296,25 @@ function Dashboard() {
                 Government Schemes
               </button>
 
-              <button className="sidebar-nav-item">
-                Renewals
-              </button>
+              <button
+  className="sidebar-nav-item"
+  type="button"
+  onClick={() => {
+    window.location.href = "/renewals";
+  }}
+>
+  Renewals
+</button>
 
-              <button className="sidebar-nav-item">
-                Grievances
-              </button>
+              <button
+  className="sidebar-nav-item"
+  type="button"
+  onClick={() => {
+    window.location.href = "/grievances";
+  }}
+>
+  Grievances
+</button>
             </>
           )}
 
@@ -993,6 +1007,16 @@ function App() {
         <Route path="/documents" element={<Documents />} />
 
         <Route path="/applications" element={<Applications />} />
+
+        <Route
+  path="/grievances"
+  element={<Grievances />}
+/>
+
+        <Route
+  path="/renewals"
+  element={<Renewals />}
+/>
 
         <Route
   path="/admin/regulatory-management"
