@@ -3,6 +3,7 @@ const express = require("express");
 const {
   register,
   login,
+  demoLogin,
 } = require("../controllers/authController");
 
 const {
@@ -14,6 +15,8 @@ const router = express.Router();
 router.post("/register", register);
 
 router.post("/login", login);
+
+router.post("/demo-login", demoLogin);
 
 router.get("/me", authenticateToken, (req, res) => {
   res.status(200).json({

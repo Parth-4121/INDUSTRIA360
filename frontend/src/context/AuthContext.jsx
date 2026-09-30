@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import axios from "axios";
 
 const AuthContext = createContext(null);
@@ -6,11 +12,46 @@ const AuthContext = createContext(null);
 const API_BASE_URL = "http://localhost:5000/api";
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem(
+      "udyogsetu_user"
+    );
+
+    if (!storedUser) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(storedUser);
+    } catch (error) {
+      localStorage.removeItem("udyogsetu_user");
+      return null;
+    }
+  });
+
   const [token, setToken] = useState(
     localStorage.getItem("udyogsetu_token")
   );
+
   const [loading, setLoading] = useState(true);
+
+  const saveAuthentication = (
+    loginToken,
+    loginUser
+  ) => {
+    localStorage.setItem(
+      "udyogsetu_token",
+      loginToken
+    );
+
+    localStorage.setItem(
+      "udyogsetu_user",
+      JSON.stringify(loginUser)
+    );
+
+    setToken(loginToken);
+    setUser(loginUser);
+  };
 
   const login = async (email, password) => {
     const response = await axios.post(
@@ -21,18 +62,55 @@ export function AuthProvider({ children }) {
       }
     );
 
-    const { token: loginToken, user: loginUser } = response.data;
+    const {
+      token: loginToken,
+      user: loginUser,
+    } = response.data;
 
-    localStorage.setItem("udyogsetu_token", loginToken);
+    saveAuthentication(
+      loginToken,
+      loginUser
+    );
 
-    setToken(loginToken);
-    setUser(loginUser);
+    return response.data;
+  };
+
+  const demoLogin = async (
+    email,
+    password,
+    role
+  ) => {
+    const response = await axios.post(
+      `${API_BASE_URL}/auth/demo-login`,
+      {
+        email,
+        password,
+        role,
+      }
+    );
+
+    const {
+      token: loginToken,
+      user: loginUser,
+    } = response.data;
+
+    saveAuthentication(
+      loginToken,
+      loginUser
+    );
 
     return response.data;
   };
 
   const logout = () => {
-    localStorage.removeItem("udyogsetu_token");
+    localStorage.removeItem(
+      "udyogsetu_token"
+    );
+
+    localStorage.removeItem(
+      "udyogsetu_user"
+    );
+
     setToken(null);
     setUser(null);
   };
@@ -54,9 +132,24 @@ export function AuthProvider({ children }) {
           }
         );
 
-        setUser(response.data.user);
+        const authenticatedUser =
+          response.data.user;
+
+        setUser(authenticatedUser);
+
+        localStorage.setItem(
+          "udyogsetu_user",
+          JSON.stringify(authenticatedUser)
+        );
       } catch (error) {
-        localStorage.removeItem("udyogsetu_token");
+        localStorage.removeItem(
+          "udyogsetu_token"
+        );
+
+        localStorage.removeItem(
+          "udyogsetu_user"
+        );
+
         setToken(null);
         setUser(null);
       } finally {
@@ -74,6 +167,7 @@ export function AuthProvider({ children }) {
         token,
         loading,
         login,
+        demoLogin,
         logout,
         isAuthenticated: !!user,
         role: user?.role || null,
@@ -95,3 +189,4 @@ export function useAuth() {
 
   return context;
 }
+

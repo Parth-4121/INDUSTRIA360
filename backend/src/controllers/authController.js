@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+
 const pool = require("../config/db");
 
 const register = async (req, res) => {
@@ -206,8 +207,196 @@ const login = async (req, res) => {
   }
 };
 
+const demoLogin = async (req, res) => {
+  try {
+    const { email, password, role } = req.body;
+
+    if (!email || !password || !role) {
+      return res.status(400).json({
+        success: false,
+        message: "Email, password and role are required",
+      });
+    }
+
+    const allowedRoles = ["ENTREPRENEUR", "OFFICER", "ADMIN"];
+
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid demo role",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Find selected role
+    const roleResult = await pool.query(
+      "SELECT id, name FROM roles WHERE name = $1",
+      [role]
+    );
+
+    if (roleResult.rows.length === 0) {
+      return res.status(500).json({
+        success: false,
+        message: "Selected role is not configured",
+      });
+    }
+
+    const roleId = roleResult.rows[0].id;
+
+    // Demo users use the selected role.
+    // Officer gets the demo Industrial Compliance department.
+    const departmentId = role === "OFFICER" ? 8 : null;
+
+    // Check whether demo email already exists
+    const existingUser = await pool.query(
+      `
+      SELECT
+        u.id,
+        u.full_name,
+        u.email,
+        u.phone,
+        u.is_active,
+        r.name AS role,
+        r.id AS role_id,
+        d.name AS department,
+        d.code AS department_code
+      FROM users u
+      JOIN roles r ON r.id = u.role_id
+      LEFT JOIN departments d ON d.id = u.department_id
+      WHERE u.email = $1
+      `,
+      [normalizedEmail]
+    );
+
+    let user;
+
+    if (existingUser.rows.length > 0) {
+      user = existingUser.rows[0];
+
+      // Update demo user's selected role and department
+      const updatedUser = await pool.query(
+        `
+        UPDATE users
+        SET
+          role_id = $1,
+          department_id = $2,
+          is_active = true,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = $3
+        RETURNING id
+        `,
+        [roleId, departmentId, user.id]
+      );
+
+      if (updatedUser.rows.length === 0) {
+        return res.status(500).json({
+          success: false,
+          message: "Unable to update demo user",
+        });
+      }
+
+      const refreshedUser = await pool.query(
+        `
+        SELECT
+          u.id,
+          u.full_name,
+          u.email,
+          u.phone,
+          u.is_active,
+          r.name AS role,
+          r.id AS role_id,
+          d.name AS department,
+          d.code AS department_code
+        FROM users u
+        JOIN roles r ON r.id = u.role_id
+        LEFT JOIN departments d ON d.id = u.department_id
+        WHERE u.id = $1
+        `,
+        [user.id]
+      );
+
+      user = refreshedUser.rows[0];
+    } else {
+      const passwordHash = await bcrypt.hash(password, 10);
+
+      const newUser = await pool.query(
+        `
+        INSERT INTO users
+        (
+          role_id,
+          department_id,
+          full_name,
+          email,
+          password_hash,
+          phone,
+          is_active
+        )
+        VALUES ($1, $2, $3, $4, $5, NULL, true)
+        RETURNING id
+        `,
+        [
+          roleId,
+          departmentId,
+          `SIH Demo ${role}`,
+          normalizedEmail,
+          passwordHash,
+        ]
+      );
+
+      const createdUser = await pool.query(
+        `
+        SELECT
+          u.id,
+          u.full_name,
+          u.email,
+          u.phone,
+          u.is_active,
+          r.name AS role,
+          r.id AS role_id,
+          d.name AS department,
+          d.code AS department_code
+        FROM users u
+        JOIN roles r ON r.id = u.role_id
+        LEFT JOIN departments d ON d.id = u.department_id
+        WHERE u.id = $1
+        `,
+        [newUser.rows[0].id]
+      );
+
+      user = createdUser.rows[0];
+    }
+
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "SIH Demo Login successful",
+      token,
+      user,
+    });
+  } catch (error) {
+    console.error("Demo login error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Demo login failed",
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
+  demoLogin,
 };
 
