@@ -20,8 +20,13 @@ import Documents from "./pages/entrepreneur/Documents";
 import Applications from "./pages/entrepreneur/Applications";
 import OfficerApplications from "./pages/officer/Applications";
 import RegulatoryManagement from "./pages/admin/RegulatoryManagement";
+import AuditLogs from "./pages/admin/AuditLogs";
 import Renewals from "./pages/entrepreneur/Renewals";
 import Grievances from "./pages/entrepreneur/Grievances";
+import RiskScrutiny from "./pages/officer/RiskScrutiny";
+import Queries from "./pages/officer/Queries";
+import Inspections from "./pages/officer/Inspections";
+import SLAMonitoring from "./pages/officer/SLAMonitoring";
 
 function DemoLogin() {
   const {
@@ -330,21 +335,45 @@ function Dashboard() {
   Applications
 </button>
 
-              <button className="sidebar-nav-item">
-                Risk Scrutiny
-              </button>
+              <button
+  className="sidebar-nav-item"
+  type="button"
+  onClick={() => {
+    window.location.href = "/officer/risk-scrutiny";
+  }}
+>
+  Risk Scrutiny
+</button>
 
-              <button className="sidebar-nav-item">
-                Queries
-              </button>
+              <button
+  className="sidebar-nav-item"
+  type="button"
+  onClick={() => {
+    window.location.href = "/officer/queries";
+  }}
+>
+  Queries
+</button>
 
-              <button className="sidebar-nav-item">
-                Inspections
-              </button>
+              <button
+  className="sidebar-nav-item"
+  type="button"
+  onClick={() => {
+    window.location.href = "/officer/inspections";
+  }}
+>
+  Inspections
+</button>
 
-              <button className="sidebar-nav-item">
-                SLA Monitoring
-              </button>
+              <button
+  className="sidebar-nav-item"
+  type="button"
+  onClick={() => {
+    window.location.href = "/officer/sla";
+  }}
+>
+  SLA Monitoring
+</button>
             </>
           )}
 
@@ -360,9 +389,15 @@ function Dashboard() {
       Regulatory Management
     </button>
 
-    <button className="sidebar-nav-item">
-      Audit Logs
-    </button>
+    <button
+  className="sidebar-nav-item"
+  type="button"
+  onClick={() => {
+    window.location.href = "/admin/audit-logs";
+  }}
+>
+  Audit Logs
+</button>
 
     <button
   className="sidebar-nav-item"
@@ -726,27 +761,39 @@ function Dashboard() {
                       </span>
                     </button>
 
-                    <button className="dashboard-action">
-                      <strong>
-                        Manage Queries
-                      </strong>
+                    <button
+  className="dashboard-action"
+  type="button"
+  onClick={() => {
+    window.location.href = "/officer/queries";
+  }}
+>
+  <strong>
+    Manage Queries
+  </strong>
 
-                      <span>
-                        Request clarification from
-                        applicants.
-                      </span>
-                    </button>
+  <span>
+    Request clarification from
+    applicants.
+  </span>
+</button>
 
-                    <button className="dashboard-action">
-                      <strong>
-                        Manage Inspections
-                      </strong>
+                    <button
+  className="dashboard-action"
+  type="button"
+  onClick={() => {
+    window.location.href = "/officer/inspections";
+  }}
+>
+  <strong>
+    Manage Inspections
+  </strong>
 
-                      <span>
-                        Review scheduled
-                        inspections.
-                      </span>
-                    </button>
+  <span>
+    Review scheduled
+    inspections.
+  </span>
+</button>
                   </div>
                 </div>
 
@@ -1008,6 +1055,23 @@ function App() {
 
         <Route path="/applications" element={<Applications />} />
 
+        <Route path="/officer/queries" element={<Queries />} />
+
+        <Route
+  path="/officer/sla"
+  element={<SLAMonitoring />}
+/>
+
+        <Route
+  path="/officer/inspections"
+  element={<Inspections />}
+/>
+
+        <Route
+  path="/officer/risk-scrutiny"
+  element={<RiskScrutiny />}
+/>
+
         <Route
   path="/grievances"
   element={<Grievances />}
@@ -1021,6 +1085,11 @@ function App() {
         <Route
   path="/admin/regulatory-management"
   element={<RegulatoryManagement />}
+/>
+
+<Route
+  path="/admin/audit-logs"
+  element={<AuditLogs />}
 />
 
         <Route
