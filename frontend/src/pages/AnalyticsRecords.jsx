@@ -24,7 +24,7 @@ const AnalyticsRecords = () => {
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("udyogsetu_token");
 
         if (!token) {
           setError("Authentication token not found");

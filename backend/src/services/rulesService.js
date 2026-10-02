@@ -62,7 +62,7 @@ const evaluateProjectRules = async (projectId, ownerUserId) => {
       p.environment_required,
       p.water_required,
       p.electricity_required,
-      p.fire_safety_required,
+      
 
       st.code AS state_code,
 

@@ -37,11 +37,20 @@ function RiskScrutiny() {
 
       const data = response.data?.applications || [];
 
-      setApplications(data);
+const assignedApplications = data.filter(
+  (application) =>
+    application.status === "UNDER_REVIEW" &&
+    Number(application.assigned_officer_id) ===
+      Number(user?.id)
+);
 
-      if (data.length > 0) {
-        setSelectedApplicationId(String(data[0].id));
-      }
+setApplications(assignedApplications);
+
+if (assignedApplications.length > 0) {
+  setSelectedApplicationId(
+    String(assignedApplications[0].id)
+  );
+}
     } catch (err) {
       setError(
         err.response?.data?.message ||
